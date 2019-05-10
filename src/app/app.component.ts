@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { map, filter, distinctUntilChanged, throttleTime, switchMap } from 'rxjs/operators';
+import { map, filter, distinctUntilChanged, throttleTime, switchMap, retryWhen, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -16,7 +16,7 @@ export class AppComponent implements OnInit{
   searchForm = new FormGroup({
     search: new FormControl(""),
   });
-
+  error = 0;
   constructor(private http: HttpClient) {
 
   }
@@ -27,11 +27,18 @@ export class AppComponent implements OnInit{
       filter(search => !!search),
       distinctUntilChanged(),
       throttleTime(300),
-      switchMap(search => this.http.get(this.apiUrl + search))
+      switchMap(search => this.http.get(this.apiUrl + search)),
+      retryWhen(err => err.pipe(tap(err => this.error++)))
     )
-    .subscribe(res => {
+    .subscribe(
+      res => {
         console.log(res);
         this.result = res["items"];
-    });
+        this.error = 0;
+      },
+      err => {
+        this.error++;
+      }
+    );
   }
 }
