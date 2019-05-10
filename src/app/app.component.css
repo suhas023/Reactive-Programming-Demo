@@ -1,0 +1,23 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.card {
+  margin: 5px 0px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+img {
+  width: 50px;
+  border-radius: 50%;
+}
+
+h2 {
+  margin-left: 30px;
+  font-family: monospace;
+}
